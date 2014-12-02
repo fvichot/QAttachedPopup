@@ -28,6 +28,7 @@ public slots:
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent * event);
+    virtual void resizeEvent(QResizeEvent * e);
 
 private:
     void placeArrow();
@@ -47,6 +48,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+public slots:
+
+    void doShit();
 
 private:
     Ui::MainWindow *ui;

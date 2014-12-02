@@ -115,7 +115,15 @@ void medAttachedPopup::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
+
+void medAttachedPopup::resizeEvent(QResizeEvent *)
+{
+    if (this->isVisible())
+        display();
+}
+
 #include <QCalendarWidget>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -128,11 +136,20 @@ MainWindow::MainWindow(QWidget *parent)
     QCalendarWidget * w = new QCalendarWidget(cw);
     cw->setLayout(new QVBoxLayout);
     cw->layout()->addWidget(w);
-    popup->attachTo(ui->pushButton, medAttachedPopup::BOTTOM);
+    popup->attachTo(ui->pushButton, medAttachedPopup::TOP);
     connect(ui->pushButton, SIGNAL(clicked()), popup, SLOT(display()));
+
+    QTimer::singleShot(5000,this, SLOT(doShit()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::doShit()
+{
+    QWidget * cw = popup->centerWidget();
+    QCalendarWidget * w = new QCalendarWidget(cw);
+    cw->layout()->addWidget(w);
 }
