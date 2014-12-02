@@ -13,7 +13,7 @@ medAttachedPopup::medAttachedPopup(QWidget *parent)
     , m_hostWidget(0)
     , m_gridLayout(new QGridLayout)
     , m_center(new QWidget(this))
-    , m_arrow(new QPixmap("arrow_bottom.png"))
+    , m_arrow(new QPixmap(":arrow_bottom.png"))
     , m_arrowLabel(new QLabel(this))
     , m_orientation(BOTTOM)
 {
