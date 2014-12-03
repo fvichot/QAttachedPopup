@@ -30,6 +30,7 @@ medAttachedPopup::medAttachedPopup(QWidget *parent)
     m_gridLayout->setContentsMargins(effect->blurRadius(),effect->blurRadius(),
                                      effect->blurRadius(),effect->blurRadius());
 
+    m_center->installEventFilter(this);
     m_center->setAttribute(Qt::WA_TranslucentBackground, false);
     m_center->setObjectName("centerWidget");
     m_center->setStyleSheet("#centerWidget {background-color:black; border:5px; border-radius:5px;}");
@@ -61,7 +62,7 @@ void medAttachedPopup::placeArrow()
 void medAttachedPopup::attachTo(QWidget * w, medAttachedPopup::Orientation o)
 {
     m_hostWidget = w;
-    m_orientation = o;
+    setOrientation(o);
 }
 
 
@@ -80,11 +81,13 @@ medAttachedPopup::Orientation medAttachedPopup::orientation() const
 void medAttachedPopup::display()
 {
     // this goes first to update this->size() etc
-    placeArrow();
     this->show();
     QPoint p = m_hostWidget->mapToGlobal(QPoint(0,0));
+    qDebug() << p;
     QMargins m = m_gridLayout->contentsMargins();
+    qDebug() << m;
     QRect frame = frameGeometry();
+    qDebug() << frame;
 
     if(m_orientation == TOP || m_orientation == BOTTOM) {
         p.rx() -= frame.width()/2 - m_hostWidget->width()/2 - 0;
@@ -102,6 +105,7 @@ void medAttachedPopup::setOrientation(medAttachedPopup::Orientation arg)
 {
     if (m_orientation != arg) {
         m_orientation = arg;
+        placeArrow();
     }
 }
 
@@ -118,8 +122,24 @@ void medAttachedPopup::mouseReleaseEvent(QMouseEvent *event)
 
 void medAttachedPopup::resizeEvent(QResizeEvent *)
 {
+    qDebug() << "helooooooo";
     if (this->isVisible())
         display();
+}
+
+bool medAttachedPopup::eventFilter(QObject *o, QEvent *e)
+{
+    if (o == m_center.data()) {
+        if (e->type() == QEvent::ChildRemoved) {
+            qDebug() << "sldkgjslkdjg";
+            if (this->isVisible()) {
+                close();
+                show();
+            }
+            return false;
+        }
+    }
+    return QWidget::eventFilter(o,e);
 }
 
 #include <QCalendarWidget>
@@ -140,6 +160,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton, SIGNAL(clicked()), popup, SLOT(display()));
 
     QTimer::singleShot(5000,this, SLOT(doShit()));
+    QTimer::singleShot(10000,this, SLOT(doMoreShit()));
 }
 
 MainWindow::~MainWindow()
@@ -153,3 +174,15 @@ void MainWindow::doShit()
     QCalendarWidget * w = new QCalendarWidget(cw);
     cw->layout()->addWidget(w);
 }
+
+
+void MainWindow::doMoreShit()
+{
+    QLayoutItem *child;
+    while ((child = popup->centerWidget()->layout()->takeAt(0)) != 0) {
+         child->widget()->deleteLater();
+        delete child;
+    }
+}
+
+

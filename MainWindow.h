@@ -30,6 +30,8 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent * event);
     virtual void resizeEvent(QResizeEvent * e);
 
+    virtual bool eventFilter(QObject * o, QEvent * e);
+
 private:
     void placeArrow();
 
@@ -52,6 +54,7 @@ public:
 public slots:
 
     void doShit();
+    void doMoreShit();
 
 private:
     Ui::MainWindow *ui;
